@@ -5,6 +5,13 @@
         &.double {
         }
     }
+    &.full-width {
+        display:inline-block; //override for manga-reader-common - TODO see if can be changed in manga-reader-common
+
+        img {
+            height:100dvh;
+        }
+    }
 }
 
 .image-container {
@@ -18,6 +25,8 @@
         margin: unset;
         object-fit: contain;
     }
+
+
 }
 
 .full-width {
@@ -40,7 +49,10 @@
 }
 
 .fit-to-width-double-offset {
-    max-width: 100%; // max-width fixes center alignment issue
+    scale:(1);
+    display: inline-block;
+    transform-origin: top left;
+
 }
 
 .original-double-offset {

@@ -1,6 +1,7 @@
 <ng-container *ngIf="isValid()">
     <div class="image-container {{imageFitClass$ | async}} {{layoutClass$ | async}} {{emulateBookClass$ | async}}"
         [style.filter]="(darkness$ | async)  ?? '' | safeStyle"
+        [style.transform]="(scale$ | async)"
         [ngClass]="{'center-double': (shouldRenderDouble$ | async)}">
         <ng-container *ngIf="currentImage">
             <img alt=" "

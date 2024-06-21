@@ -10,7 +10,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import { Observable, of, map, tap, shareReplay, filter, combineLatest } from 'rxjs';
+import { Observable, of, map, tap, shareReplay, filter, combineLatest, switchMap } from 'rxjs';
 import { PageSplitOption } from 'src/app/_models/preferences/page-split-option';
 import { ReaderMode } from 'src/app/_models/preferences/reader-mode';
 import { ReaderService } from 'src/app/_services/reader.service';
@@ -49,6 +49,7 @@ export class DoubleRendererComponent implements OnInit, ImageRenderer {
   showClickOverlayClass$!: Observable<string>;
   readerModeClass$!: Observable<string>;
   layoutClass$!: Observable<string>;
+  scale$!: Observable<string>;
   darkness$: Observable<string> = of('brightness(100%)');
   emulateBookClass$: Observable<string> = of('');
   layoutMode: LayoutMode = LayoutMode.Single;
@@ -94,6 +95,15 @@ export class DoubleRendererComponent implements OnInit, ImageRenderer {
     this.darkness$ = this.readerSettings$.pipe(
       map(values => 'brightness(' + values.darkness + '%)'),
       filter(_ => this.isValid()),
+      takeUntilDestroyed(this.destroyRef)
+    );
+
+    this.scale$ = this.image$.pipe(
+      filter(_ => this.isValid()),
+      switchMap(img => {
+        this.cdRef.markForCheck();
+        return this.calculateScale$();
+      }),
       takeUntilDestroyed(this.destroyRef)
     );
 
@@ -176,6 +186,18 @@ export class DoubleRendererComponent implements OnInit, ImageRenderer {
   }
 
 
+  calculateScale$(): Observable<string> {
+    return this.readerSettings$.pipe(
+      map(values => values.fitting),
+      map(mode => {
+        console.log(this.image$)
+        return 'scale(2)';
+      }),
+      filter(_ => this.isValid())
+    );
+  }
+
+
   shouldRenderDouble() {
     if (!this.isValid()) return false;
 
@@ -221,10 +243,17 @@ export class DoubleRendererComponent implements OnInit, ImageRenderer {
       return;
     }
 
+    // img[0].height = 100;
+    // img[0].width = 100;
+    // console.log(img)
     this.cdRef.markForCheck();
     this.imageHeight.emit(Math.max(this.currentImage.height, this.currentImage2.height));
     this.cdRef.markForCheck();
   }
+
+  // scaleToFit(img: Array<HTMLImageElement | null>): void{
+
+  // }
 
   shouldMovePrev(): boolean {
     return true;

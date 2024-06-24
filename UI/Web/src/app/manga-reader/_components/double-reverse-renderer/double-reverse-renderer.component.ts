@@ -10,7 +10,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import { Observable, of, map, tap, shareReplay, filter, combineLatest } from 'rxjs';
+import { Observable, of, map, tap, shareReplay, filter, combineLatest, switchMap } from 'rxjs';
 import { PageSplitOption } from 'src/app/_models/preferences/page-split-option';
 import { ReaderMode } from 'src/app/_models/preferences/reader-mode';
 import { ReaderService } from 'src/app/_services/reader.service';
@@ -52,6 +52,7 @@ export class DoubleReverseRendererComponent implements OnInit, ImageRenderer {
   showClickOverlayClass$!: Observable<string>;
   readerModeClass$!: Observable<string>;
   layoutClass$!: Observable<string>;
+  scale$!: Observable<string>;
   darkness$: Observable<string> = of('brightness(100%)');
   emulateBookClass$: Observable<string> = of('');
   layoutMode: LayoutMode = LayoutMode.Single;
@@ -100,6 +101,16 @@ export class DoubleReverseRendererComponent implements OnInit, ImageRenderer {
       filter(_ => this.isValid()),
       takeUntilDestroyed(this.destroyRef)
     );
+
+    this.scale$ = this.image$.pipe(
+      filter(_ => this.isValid()),
+      switchMap(img => {
+        this.cdRef.markForCheck();
+        return this.calculateScale$();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    );
+
 
     this.emulateBookClass$ = this.readerSettings$.pipe(
       map(data => data.emulateBook),
@@ -176,6 +187,22 @@ export class DoubleReverseRendererComponent implements OnInit, ImageRenderer {
       }),
       filter(_ => this.isValid()),
     ).subscribe(() => {});
+  }
+
+
+  private calculateScale$(): Observable<string> {
+    return this.readerSettings$.pipe(
+      map(values => values.fitting),
+      map(mode => {
+        return 'scale(1)';
+      }),
+      filter(_ => this.isValid())
+    );
+  }
+
+
+  scale() {
+    return "scale(1)"
   }
 
   shouldRenderDouble() {

@@ -557,7 +557,7 @@ export class MangaReaderComponent implements OnInit, AfterViewInit, OnDestroy {
         const changeOccurred = parseInt(val, 10) !== this.layoutMode;
         this.layoutMode = parseInt(val, 10);
 
-        if (this.layoutMode === LayoutMode.Single) {
+        if (this.layoutMode === LayoutMode.Single || this.layoutMode === LayoutMode.Double) {
           this.generalSettingsForm.get('pageSplitOption')?.setValue(this.user.preferences.pageSplitOption);
           this.generalSettingsForm.get('pageSplitOption')?.enable();
           this.generalSettingsForm.get('fittingOption')?.enable();

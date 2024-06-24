@@ -185,13 +185,41 @@ export class DoubleRendererComponent implements OnInit, ImageRenderer {
     ).subscribe(() => {});
   }
 
+  // renderPage(img: Array<HTMLImageElement | null>): void {
+  //   if (img === null || img.length === 0 || img[0] === null) return;
+  //   if (!this.isValid()) return;
+
+  //   // First load, switching from double manga -> double, this is 0 and thus not rendering
+  //   if (!this.shouldRenderDouble() && (this.currentImage.height || img[0].height) > 0) {
+  //     this.imageHeight.emit(this.currentImage.height || img[0].height);
+  //     return;
+  //   }
+
+  //   // img[0].height = 100;
+  //   // img[0].width = 100;
+  //   // console.log(img)
+  //   this.cdRef.markForCheck();
+  //   this.imageHeight.emit(Math.max(this.currentImage.height, this.currentImage2.height));
+  //   this.cdRef.markForCheck();
+  // }
 
   calculateScale$(): Observable<string> {
+    let images_width = this.currentImage.width + this.currentImage2.width // returns size before rescaling, doesnt really work
+    let page_width = this.document.body.scrollWidth
+    let image_1 = this.document.querySelector("#image-1")
+    let image_2 = this.document.querySelector("#image-2")
+    console.log(image_1)
+    let image_1_width = 0
+    let image_2_width = 0
+    if (!!image_1) {image_1_width == image_1.scrollWidth}
+    if (!!image_2) {image_2_width == image_2.clientWidth}
+
+    console.log(image_1_width, image_2_width, page_width)
+    let image_scale = page_width / images_width
     return this.readerSettings$.pipe(
       map(values => values.fitting),
       map(mode => {
-        console.log(this.image$)
-        return 'scale(2)';
+        return `scale(${image_scale})`; //this scale(2)
       }),
       filter(_ => this.isValid())
     );

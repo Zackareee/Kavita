@@ -746,7 +746,7 @@ export class BookReaderComponent implements OnInit, AfterViewInit, OnDestroy {
       event.preventDefault()
       this.scrollService.scrollToX(  event.deltaY + this.reader.nativeElement.scrollLeft, this.reader.nativeElement);
     }
-}
+  }
 
   closeReader() {
     this.readerService.closeReader(this.readingListMode, this.readingListId);
